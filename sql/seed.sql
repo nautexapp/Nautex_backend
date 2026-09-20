@@ -82,7 +82,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2023_Marzo.pdf",
                 "solutions_file": "Andalucia/2023_Marzo_sol.pdf",
                 "questions_file": "Andalucia/2023_Marzo.json",
-                "name": "Andalucía - 2023 Marzo",
+                "name": "2023 - Marzo",
                 "questions": 27
             },
             {
@@ -90,7 +90,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2023_Junio.pdf",
                 "solutions_file": "Andalucia/2023_Junio_sol.pdf",
                 "questions_file": "Andalucia/2023_Junio.json",
-                "name": "Andalucía - 2023 Junio",
+                "name": "2023 - Junio",
                 "questions": 27
             },
             {
@@ -98,7 +98,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2023_Octubre.pdf",
                 "solutions_file": "Andalucia/2023_Octubre_sol.pdf",
                 "questions_file": "Andalucia/2023_Octubre.json",
-                "name": "Andalucía - 2023 Octubre",
+                "name": "2023 - Octubre",
                 "questions": 27
             },
             {
@@ -106,7 +106,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2024_Abril.pdf",
                 "solutions_file": "Andalucia/2024_Abril_sol.pdf",
                 "questions_file": "Andalucia/2024_Abril.json",
-                "name": "Andalucía - 2024 Abril",
+                "name": "2024 - Abril",
                 "questions": 27
             },
             {
@@ -114,7 +114,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2024_Julio.pdf",
                 "solutions_file": "Andalucia/2024_Julio_sol.pdf",
                 "questions_file": "Andalucia/2024_Julio.json",
-                "name": "Andalucía - 2024 Julio",
+                "name": "2024 - Julio",
                 "questions": 27
             },
             {
@@ -122,7 +122,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2024_Noviembre.pdf",
                 "solutions_file": "Andalucia/2024_Noviembre_sol.pdf",
                 "questions_file": "Andalucia/2024_Noviembre.json",
-                "name": "Andalucía - 2024 Noviembre",
+                "name": "2024 - Noviembre",
                 "questions": 27
             },
             {
@@ -130,7 +130,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2025_Marzo.pdf",
                 "solutions_file": "Andalucia/2025_Marzo_sol.pdf",
                 "questions_file": "Andalucia/2025_Marzo.json",
-                "name": "Andalucía - 2025 Marzo",
+                "name": "2025 - Marzo",
                 "questions": 27
             },
             {
@@ -138,7 +138,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2025_Julio.pdf",
                 "solutions_file": "Andalucia/2025_Julio_sol.pdf",
                 "questions_file": "Andalucia/2025_Julio.json",
-                "name": "Andalucía - 2025 Julio",
+                "name": "2025 - Julio",
                 "questions": 27
             },
             {
@@ -146,7 +146,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2025_Noviembre.pdf",
                 "solutions_file": "Andalucia/2025_Noviembre_sol.pdf",
                 "questions_file": "Andalucia/2025_Noviembre.json",
-                "name": "Andalucía - 2025 Noviembre",
+                "name": "2025 - Noviembre",
                 "questions": 27
             },
             {
@@ -154,7 +154,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2026_Marzo.pdf",
                 "solutions_file": "Andalucia/2026_Marzo_sol.pdf",
                 "questions_file": "Andalucia/2026_Marzo.json",
-                "name": "Andalucía - 2026 Marzo",
+                "name": "2026 - Marzo",
                 "questions": 27
             },
             {
@@ -162,61 +162,61 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
                 "file": "Andalucia/2026_Junio.pdf",
                 "solutions_file": "Andalucia/2026_Junio_sol.pdf",
                 "questions_file": "Andalucia/2026_Junio.json",
-                "name": "Andalucía - 2026 Junio",
+                "name": "2026 - Junio",
                 "questions": 27
             },
             {
                 "id": 12,
                 "file": "Cataluña/2024-Junio.pdf",
-                "name": "Cataluña - 2024 Junio",
+                "name": "2024 - Junio",
                 "questions": 27
             },
             {
                 "id": 13,
                 "file": "Cataluña/2024-Diciembre.pdf",
-                "name": "Cataluña - 2024 Diciembre",
+                "name": "2024 - Diciembre",
                 "questions": 27
             },
             {
                 "id": 14,
                 "file": "Cataluña/2025-Junio.pdf",
-                "name": "Cataluña - 2025 Junio",
+                "name": "2025 - Junio",
                 "questions": 27
             },
             {
                 "id": 15,
                 "file": "Cataluña/2025-Julio.pdf",
-                "name": "Cataluña - 2025 Julio",
+                "name": "2025 - Julio",
                 "questions": 27
             },
             {
                 "id": 16,
                 "file": "Madrid/junio_2023.pdf",
-                "name": "Madrid - 2023 Junio",
+                "name": "2023 - Junio",
                 "questions": 27
             },
             {
                 "id": 17,
                 "file": "Madrid/noviembre_2023.pdf",
-                "name": "Madrid - 2023 Noviembre",
+                "name": "2023 - Noviembre",
                 "questions": 27
             },
             {
                 "id": 18,
                 "file": "Madrid/junio_2024.pdf",
-                "name": "Madrid - 2024 Junio",
+                "name": "2024 - Junio",
                 "questions": 27
             },
             {
                 "id": 19,
                 "file": "Madrid/noviembre_2024.pdf",
-                "name": "Madrid - 2024 Noviembre",
+                "name": "2024 - Noviembre",
                 "questions": 27
             },
             {
                 "id": 20,
                 "file": "Madrid/junio_2025.pdf",
-                "name": "Madrid - 2025 Junio",
+                "name": "2025 - Junio",
                 "questions": 27
             }
         ],
