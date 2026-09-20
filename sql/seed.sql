@@ -229,7 +229,7 @@ INSERT INTO courses (id, name, folder_reference, documents) VALUES (
             },
             {
                 "id": 2,
-                "file": "02. ELEMENTOS DE AMARRE Y FONDE--O.pdf",
+                "file": "02. ELEMENTOS DE AMARRE Y FONDEO.pdf",
                 "name": "Elementos de amarre y fondeo",
                 "pages": 7
             },
