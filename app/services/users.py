@@ -1,17 +1,20 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.core.identity import AuthenticatedUser
 from app.db.models import RegistrationCode, User
 
 
-from sqlalchemy.orm import joinedload
-
-async def get_user_by_entra_id(session: AsyncSession, entra_id: str) -> User | None:
+async def get_user_by_google_id(session: AsyncSession, google_id: str) -> User | None:
     result = await session.execute(
-        select(User).options(joinedload(User.school)).where(User.entra_id == entra_id)
+        select(User).options(joinedload(User.school)).where(User.google_id == google_id)
     )
     return result.scalar_one_or_none()
+
+
+# Alias para compatibilidad
+get_user_by_entra_id = get_user_by_google_id
 
 
 async def sync_user(
@@ -19,7 +22,7 @@ async def sync_user(
     identity: AuthenticatedUser,
     registration_code: str | None = None,
 ) -> tuple[User, bool]:
-    user = await get_user_by_entra_id(session, identity.entra_id)
+    user = await get_user_by_google_id(session, identity.google_id)
     if user:
         if user.email != identity.email:
             user.email = identity.email
@@ -43,7 +46,7 @@ async def sync_user(
             reg_code.is_used = True
 
     user = User(
-        entra_id=identity.entra_id,
+        google_id=identity.google_id,
         email=identity.email,
         progress={},
         school_id=school_id,
@@ -64,7 +67,7 @@ async def update_test_progress(
         "total_correct_answers": 0,
     })
     
-    # Store test id if not already present
+    # Guardar ID del test si no estaba registrado
     if test_id not in tests_prog["completed_test_ids"]:
         tests_prog["completed_test_ids"].append(test_id)
         
@@ -73,7 +76,6 @@ async def update_test_progress(
     
     progress["tests"] = tests_prog
     
-    # SQLAlchemy might not detect dictionary updates automatically unless we re-assign or use flag_modified
     user.progress = progress
     from sqlalchemy.orm.attributes import flag_modified
     flag_modified(user, "progress")

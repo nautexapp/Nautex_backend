@@ -7,17 +7,10 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.config import Settings, get_settings
-from app.services.keyvault import get_secret
 
 settings = get_settings()
 
 def _get_database_url(settings: Settings) -> str:
-    # Si tenemos un Key Vault, forzamos usar el secreto para la BD (o podemos hacer fallback)
-    if settings.azure_key_vault_url:
-        try:
-            return get_secret(settings, settings.database_url_secret_name)
-        except Exception:
-            pass # Si falla, intenta usar la local
     return settings.database_url
 
 engine = None

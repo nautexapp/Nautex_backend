@@ -1,7 +1,5 @@
 from contextlib import asynccontextmanager
-import asyncio
 import logging
-from datetime import datetime, timedelta, timezone
 
 logging.basicConfig(
     level=logging.INFO,
@@ -9,31 +7,29 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-# Silenciar logs excesivos del SDK de Azure
-logging.getLogger("azure").setLevel(logging.WARNING)
-logging.getLogger("azure.core.pipeline.policies.http_logging_policy").setLevel(logging.WARNING)
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
 from app.db.base import Base
-from app.db.session import AsyncSessionLocal, get_engine, init_db
+from app.db.session import get_engine, init_db
 from app.routers import ai, courses, registration, users
 
 settings = get_settings()
 logger = logging.getLogger(__name__)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    
+
     if settings.debug:
         eng = get_engine()
         async with eng.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-            
+
     yield
+
 
 app = FastAPI(
     title=settings.app_name,
@@ -55,16 +51,19 @@ app.include_router(registration.router, prefix=settings.api_prefix)
 app.include_router(courses.router, prefix=settings.api_prefix)
 app.include_router(ai.router, prefix=settings.api_prefix)
 
+
 @app.get("/debug-settings")
 def debug_settings():
-    from app.config import get_settings
     s = get_settings()
     return {
-        "azure_tenant_id": s.azure_tenant_id,
-        "azure_client_id": s.azure_client_id,
-        "entra_client_id": s.entra_client_id,
-        "base_dir": str(s.model_config.get("env_file")),
+        "app_name": s.app_name,
+        "debug": s.debug,
+        "google_client_id_configured": bool(s.google_client_id),
+        "r2_bucket_name": s.r2_bucket_name,
+        "r2_configured": bool(s.r2_access_key_id or s.r2_public_url),
+        "database_configured": bool(s.database_url),
     }
+
 
 @app.get("/health")
 async def health() -> dict[str, str]:

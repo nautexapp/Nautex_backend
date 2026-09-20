@@ -35,7 +35,7 @@ async def get_course(
     Solo accesible por el alumno matriculado en ese curso.
     """
     # Verificar que el usuario tiene acceso a este curso
-    user_result = await db.execute(select(User).where(User.entra_id == current_user.entra_id))
+    user_result = await db.execute(select(User).where(User.google_id == current_user.google_id))
     db_user = user_result.scalar_one_or_none()
     if not db_user:
         raise HTTPException(status_code=403, detail="Usuario no encontrado")
@@ -65,7 +65,7 @@ async def get_course_document_url(
     Parámetros query: section (apuntes|examenes|documentos), file (ruta del fichero)
     """
     # Verificar acceso del usuario al curso
-    user_result = await db.execute(select(User).where(User.entra_id == current_user.entra_id))
+    user_result = await db.execute(select(User).where(User.google_id == current_user.google_id))
     db_user = user_result.scalar_one_or_none()
     if not db_user or db_user.course_id != course_id:
         raise HTTPException(status_code=403, detail="No tienes acceso a este curso")
@@ -103,7 +103,7 @@ async def get_course_test_questions_url(
     Genera una URL SAS temporal para el archivo JSON de preguntas de un test del curso.
     """
     # Verificar acceso del usuario al curso
-    user_result = await db.execute(select(User).where(User.entra_id == current_user.entra_id))
+    user_result = await db.execute(select(User).where(User.google_id == current_user.google_id))
     db_user = user_result.scalar_one_or_none()
     if not db_user or db_user.course_id != course_id:
         raise HTTPException(status_code=403, detail="No tienes acceso a este curso")
@@ -151,7 +151,7 @@ async def get_course_examen_questions_url(
     y se sirve desde la carpeta Examenes/ de Azure Blob Storage.
     """
     # Verificar acceso del usuario al curso
-    user_result = await db.execute(select(User).where(User.entra_id == current_user.entra_id))
+    user_result = await db.execute(select(User).where(User.google_id == current_user.google_id))
     db_user = user_result.scalar_one_or_none()
     if not db_user or db_user.course_id != course_id:
         raise HTTPException(status_code=403, detail="No tienes acceso a este curso")

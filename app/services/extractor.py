@@ -11,34 +11,16 @@ import io
 import logging
 
 from docx import Document as DocxDocument
-
 from app.config import Settings
-from app.services.storage import _get_connection_string
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_MIME_TYPES = {
-    "application/pdf",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-}
-
-MIME_LABEL = {
-    "application/pdf": "PDF",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "DOCX",
-}
-
-
 def _download_blob_to_bytes(settings: Settings, blob_name: str) -> bytes:
-    """Descarga un blob de Azure Storage y devuelve sus bytes en memoria."""
-    from azure.storage.blob import BlobServiceClient
-
-    connection_string = _get_connection_string(settings)
-    client = BlobServiceClient.from_connection_string(connection_string)
-    blob_client = client.get_blob_client(
-        container=settings.storage_container_name, blob=blob_name
-    )
-    stream = blob_client.download_blob()
-    return stream.readall()
+    """Descarga un archivo desde Cloudflare R2 a memoria."""
+    from app.services.storage import _get_s3_client
+    s3 = _get_s3_client(settings)
+    response = s3.get_object(Bucket=settings.r2_bucket_name, Key=blob_name)
+    return response["Body"].read()
 
 
 def _extract_from_pdf(data: bytes) -> str:

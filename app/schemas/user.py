@@ -15,7 +15,8 @@ class SchoolInfoResponse(BaseModel):
 class UserMeResponse(BaseModel):
     id: UUID
     email: EmailStr
-    entra_id: str
+    google_id: str
+    entra_id: Optional[str] = None
     progress: dict
     school_id: Optional[UUID] = None
     course_id: Optional[UUID] = None

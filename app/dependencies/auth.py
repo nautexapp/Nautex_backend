@@ -1,7 +1,6 @@
 import logging
 from typing import Annotated
 
-import httpx
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -14,67 +13,59 @@ logger = logging.getLogger(__name__)
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
+GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs"
 _jwks_client: PyJWKClient | None = None
 
 
-def _get_jwks_client(settings: Settings) -> PyJWKClient:
+def _get_google_jwks_client() -> PyJWKClient:
     global _jwks_client
     if _jwks_client is None:
-        oidc_url = settings.azure_jwks_url
-        with httpx.Client(timeout=10.0) as client:
-            oidc = client.get(oidc_url)
-            oidc.raise_for_status()
-            jwks_uri = oidc.json()["jwks_uri"]
-        _jwks_client = PyJWKClient(jwks_uri, cache_keys=True)
+        _jwks_client = PyJWKClient(GOOGLE_JWKS_URL, cache_keys=True)
     return _jwks_client
 
 
-def _extract_email(claims: dict) -> str | None:
-    # Entra ID estándar: preferred_username, email, upn, unique_name (string)
-    for key in ("preferred_username", "email", "upn", "unique_name"):
-        value = claims.get(key)
-        if isinstance(value, str) and "@" in value:
-            return value.lower()
-
-    # Azure CIAM (External ID): el email viene en el array "emails"
-    emails_array = claims.get("emails")
-    if isinstance(emails_array, list):
-        for entry in emails_array:
-            if isinstance(entry, str) and "@" in entry:
-                return entry.lower()
-
-    return None
-
-
-def _decode_entra_token(token: str, settings: Settings) -> dict:
-    if not settings.azure_tenant_id or not settings.token_audiences:
-        debug_info = f"tenant={bool(settings.azure_tenant_id)}, audiences={bool(settings.token_audiences)}, azure_client_id={bool(settings.azure_client_id)}, entra_client_id={bool(getattr(settings, 'entra_client_id', ''))}"
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Autenticación Entra ID no configurada en el servidor. Debug: {debug_info}",
-        )
+def _decode_google_token(token: str, settings: Settings) -> dict:
+    """
+    Decodifica y valida un ID Token emitido por Google Identity Services.
+    En modo depuración (DEBUG=true), permite tokens de prueba mockeados.
+    """
+    if settings.debug and token in ("dev-token", "test-token"):
+        return {
+            "sub": "google-mock-test-id",
+            "email": "test@nautex.es",
+            "name": "Usuario Pruebas",
+        }
 
     try:
-        jwks_client = _get_jwks_client(settings)
+        jwks_client = _get_google_jwks_client()
         signing_key = jwks_client.get_signing_key_from_jwt(token)
-        return jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["RS256"],
-            audience=settings.token_audiences,
-            issuer=settings.azure_issuer,
-            options={"require": ["exp", "iss", "aud", "sub"]},
-        )
+
+        decode_kwargs = {
+            "algorithms": ["RS256"],
+            "options": {"verify_exp": True},
+        }
+        if settings.google_client_id:
+            decode_kwargs["audience"] = settings.google_client_id
+        else:
+            decode_kwargs["options"]["verify_aud"] = False
+
+        claims = jwt.decode(token, signing_key.key, **decode_kwargs)
+
+        issuer = claims.get("iss")
+        if issuer not in ("accounts.google.com", "https://accounts.google.com"):
+            raise jwt.InvalidIssuerError(f"Issuer de Google no reconocido: {issuer}")
+
+        return claims
     except jwt.ExpiredSignatureError as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="El token ha caducado",
+            detail="La sesión ha caducado. Inicia sesión de nuevo.",
         ) from exc
-    except jwt.InvalidTokenError as exc:
-        logger.warning("Token inválido: %s | issuer esperado: %s | audiences: %s", exc, settings.azure_issuer, settings.token_audiences)
+    except Exception as exc:
+        logger.warning("Token de Google inválido: %s", exc)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token no válido",
+            detail="Token no válido o no autenticado con Google",
         ) from exc
 
 
@@ -91,20 +82,20 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    claims = _decode_entra_token(credentials.credentials, settings)
+    claims = _decode_google_token(credentials.credentials, settings)
 
-    entra_id = claims.get("oid") or claims.get("sub")
-    if not entra_id:
+    google_id = claims.get("sub")
+    if not google_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="El token no incluye identificador de usuario (oid/sub)",
+            detail="El token no incluye el identificador de usuario (sub)",
         )
 
-    email = _extract_email(claims)
-    if not email:
+    email = claims.get("email")
+    if not email or not isinstance(email, str) or "@" not in email:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="El token no incluye un email válido",
         )
 
-    return AuthenticatedUser(entra_id=str(entra_id), email=email)
+    return AuthenticatedUser(google_id=str(google_id), email=email.lower())

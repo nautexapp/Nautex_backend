@@ -87,7 +87,7 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, server_default=text("gen_random_uuid()")
     )
-    entra_id: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    google_id: Mapped[str] = mapped_column(String(128), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
     progress: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False, server_default='{}')
     school_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -105,6 +105,10 @@ class User(Base):
 
     school: Mapped["School | None"] = relationship(back_populates="users")
     course: Mapped["Course | None"] = relationship(back_populates="users")
+
+    @property
+    def entra_id(self) -> str:
+        return self.google_id
 
 
 

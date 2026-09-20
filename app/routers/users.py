@@ -7,7 +7,7 @@ from app.core.identity import AuthenticatedUser
 from app.db.session import get_db
 from app.dependencies.auth import get_current_user
 from app.schemas.user import UserMeResponse, UserSyncRequest, UserSyncResponse
-from app.services.users import get_user_by_entra_id, sync_user
+from app.services.users import get_user_by_google_id, sync_user
 
 router = APIRouter(prefix="/users", tags=["Usuarios y saldo"])
 
@@ -31,7 +31,7 @@ async def get_me(
     identity: Annotated[AuthenticatedUser, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> UserMeResponse:
-    user = await get_user_by_entra_id(db, identity.entra_id)
+    user = await get_user_by_google_id(db, identity.google_id)
     if not user:
         user, _ = await sync_user(db, identity)
     return UserMeResponse.model_validate(user)
@@ -46,7 +46,7 @@ async def update_progress_tests(
     db: Annotated[AsyncSession, Depends(get_db)],
 ) -> UserMeResponse:
     from app.services.users import update_test_progress
-    user = await get_user_by_entra_id(db, identity.entra_id)
+    user = await get_user_by_google_id(db, identity.google_id)
     if not user:
         user, _ = await sync_user(db, identity)
     
