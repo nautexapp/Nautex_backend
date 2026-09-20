@@ -1,0 +1,1 @@
+"""ExamIA FastAPI backend."""

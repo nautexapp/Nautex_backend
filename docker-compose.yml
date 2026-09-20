@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: nautex_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=admin_local
+      - POSTGRES_PASSWORD=superpassword123
+      - POSTGRES_DB=nautex_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+
+volumes:
+  postgres_data:
